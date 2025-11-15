@@ -1,0 +1,28 @@
+SAMPLE DOCUMENT FOR TESTING
+
+This is a sample document used for testing the Smart Document Analyzer system.
+
+The document contains multiple paragraphs with different types of content to test
+the parsing and analysis capabilities of the system.
+
+Key Features:
+- Document processing with multiple file formats
+- AI-powered analysis including sentiment analysis
+- Entity extraction and keyword identification
+- Cloud-native architecture using AWS Lambda
+- Scalable and maintainable design using OOP principles
+
+This system demonstrates best practices in:
+1. Object-oriented programming with abstract base classes
+2. Design patterns such as Strategy pattern
+3. AWS Lambda integration
+4. Document processing workflows
+
+The analyzer can process various document types and extract valuable insights
+from the content using machine learning techniques.
+
+Sample Numbers: 42, 123, 999
+Sample Names: John Smith, Jane Doe, AWS
+
+This implementation showcases modern Python development practices with proper
+error handling, logging, and unit testing capabilities.

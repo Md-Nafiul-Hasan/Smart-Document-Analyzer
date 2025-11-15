@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Smart Document Analyzer CloudFormation Template'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    Description: Environment name (dev, staging, prod)
+  
+  LambdaTimeout:
+    Type: Number
+    Default: 300
+    Description: Lambda function timeout in seconds
+
+Resources:
+  DocumentProcessorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                Resource: !Sub 'arn:aws:s3:::${DocumentBucket}/*'
+
+  AIAnalyzerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+
+  DocumentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'smart-document-analyzer-${EnvironmentName}-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+
+  DocumentProcessorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'smart-doc-analyzer-processor-${EnvironmentName}'
+      Runtime: python3.11
+      Role: !GetAtt DocumentProcessorRole.Arn
+      Handler: handler.lambda_handler
+      Timeout: !Ref LambdaTimeout
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              return {
+                  'statusCode': 200,
+                  'body': 'Document Processor Lambda'
+              }
+
+  AIAnalyzerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'smart-doc-analyzer-ai-${EnvironmentName}'
+      Runtime: python3.11
+      Role: !GetAtt AIAnalyzerRole.Arn
+      Handler: handler.lambda_handler
+      Timeout: !Ref LambdaTimeout
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              return {
+                  'statusCode': 200,
+                  'body': 'AI Analyzer Lambda'
+              }
+
+  ProcessingQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub 'smart-doc-analyzer-queue-${EnvironmentName}'
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 1209600
+
+Outputs:
+  DocumentBucketName:
+    Description: S3 bucket for documents
+    Value: !Ref DocumentBucket
+    Export:
+      Name: !Sub 'SmartDocAnalyzer-Bucket-${EnvironmentName}'
+
+  ProcessorFunctionArn:
+    Description: Document Processor Lambda ARN
+    Value: !GetAtt DocumentProcessorFunction.Arn
+    Export:
+      Name: !Sub 'SmartDocAnalyzer-Processor-${EnvironmentName}'
+
+  AIAnalyzerFunctionArn:
+    Description: AI Analyzer Lambda ARN
+    Value: !GetAtt AIAnalyzerFunction.Arn
+    Export:
+      Name: !Sub 'SmartDocAnalyzer-Analyzer-${EnvironmentName}'
+
+  ProcessingQueueUrl:
+    Description: SQS Queue URL
+    Value: !Ref ProcessingQueue
+    Export:
+      Name: !Sub 'SmartDocAnalyzer-Queue-${EnvironmentName}'

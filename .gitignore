@@ -1,0 +1,35 @@
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.so
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Logs and local env
+*.log
+.env
+
+# AWS credentials (should never be committed)
+.aws/
+
+# Build artifacts
+dist/
+build/
