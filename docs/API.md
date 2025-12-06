@@ -233,7 +233,7 @@ All endpoints return standard error responses:
 
 ### Document Processing Example
 ```python
-from src.lambda.document_processor.document_processor import DocumentProcessor
+from src.lambdas.document_processor.document_processor import DocumentProcessor
 
 processor = DocumentProcessor()
 result = processor.process("documents/sample.txt")
@@ -245,7 +245,7 @@ if result['success']:
 
 ### AI Analysis Example
 ```python
-from src.lambda.ai_analyzer.ai_analyzer import AIAnalyzer
+from src.lambdas.ai_analyzer.ai_analyzer import AIAnalyzer
 
 analyzer = AIAnalyzer()
 result = analyzer.analyze({
